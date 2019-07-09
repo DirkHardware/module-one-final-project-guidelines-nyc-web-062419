@@ -43,6 +43,7 @@ class User < ActiveRecord::Base
             old_chore = old_assignment.chore
             old_assignment.delete 
             old_chore.delete 
+            puts "Haha! Now #{user.name} has to #{taskname.downcase}."
         else 
             puts "#{user.name} is already doing that you lazy bum!"
         end 

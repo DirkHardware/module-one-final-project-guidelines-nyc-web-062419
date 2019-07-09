@@ -64,4 +64,10 @@ class User < ActiveRecord::Base
         same_exists
     end  
 
+    def self.list_roommates
+        User.all.each do |user_instance|
+            puts "#{user_instance.name}"
+        end 
+    end  
+
 end 

@@ -17,4 +17,11 @@ class Assignment < ActiveRecord::Base
         end
     end 
 
+    def self.who_does_what
+        Assignment.all.each do |assignment_instance|
+            puts "#{assignment_instance.user.name} has been asked to #{assignment_instance.taskname.downcase}."
+        end 
+    end 
+
+
 end 

@@ -7,6 +7,17 @@ class Chore < ActiveRecord::Base
         Chore.all.each do |chore_instance|
             puts "We still have to #{chore_instance.name.downcase}."
         end 
-    end 
+    end
+    
+    def self.similar_chore(taskname)
+        can_create_chore = true
+        Chore.all.each do |chore_instance|
+            # binding.pry
+            if chore_instance.name.downcase == taskname.downcase
+                can_create_chore = false  
+            end 
+        end
+        can_create_chore
+    end  
 
 end 

@@ -36,13 +36,13 @@ class User < ActiveRecord::Base
     def shirk_task(user, taskname)
         can_shirk = similar_task(user, taskname)
         # can_shirk = true
-        shirk_chore = Chore.find_by name: taskname 
+        shirk_chore = Chore.find_by name: taskname.capitalize 
+        binding.pry
         if can_shirk == true
             new_assignment = Assignment.create(user: user, chore: shirk_chore, taskname: shirk_chore.name)
-            old_assignment = Assignment.find_by taskname: taskname, user: self 
-            old_chore = old_assignment.chore
+            old_assignment = Assignment.find_by taskname: taskname.capitalize, user: self 
+            # binding.pry
             old_assignment.delete 
-            old_chore.delete 
             puts "Haha! Now #{user.name} has to #{taskname.downcase}."
         else 
             puts "#{user.name} is already doing that you lazy bum!"
@@ -55,19 +55,19 @@ class User < ActiveRecord::Base
 
     
     def similar_task(user, taskname)
-        same_exists = true
+        can_create_task = true
         user.assignments.each do |assignment_instance|
             if assignment_instance.taskname.downcase == taskname.downcase
                 # binding.pry 
-                same_exists = false  
+                can_create_task = false  
             end 
         end
-        same_exists
+        can_create_task
     end  
 
     def self.list_roommates
         User.all.each do |user_instance|
-            puts "#{user_instance.name}"
+            puts "#{user_instance.name} has #{user_instance.assignments.count} things to do."
         end 
     end  
 

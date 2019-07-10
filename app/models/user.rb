@@ -37,7 +37,6 @@ class User < ActiveRecord::Base
         can_shirk = similar_task(user, taskname)
         # can_shirk = true
         shirk_chore = Chore.find_by name: taskname.capitalize 
-        binding.pry
         if can_shirk == true
             new_assignment = Assignment.create(user: user, chore: shirk_chore, taskname: shirk_chore.name)
             old_assignment = Assignment.find_by taskname: taskname.capitalize, user: self 

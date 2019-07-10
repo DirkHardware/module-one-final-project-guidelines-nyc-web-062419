@@ -23,9 +23,15 @@ class CLI
             spacer(2)
             intro
 
+        when "chores"
+            spacer(2)
+            Chore.todo
+            spacer(2)
+            intro
+
         when "commands"
             commands
-            spacer(2)
+            spacer(1)
             intro  
 
         when "finish"
@@ -41,7 +47,7 @@ class CLI
             spacer(2)
 
         when "main menu"
-            space(1)
+            spacer(1)
             intro
         
         when "roomies"
@@ -106,13 +112,14 @@ class CLI
         puts "Available Commands are: "
         puts "Assignments -- List who has been tasked with what chores."
         puts "Commands -- List all possible commands."
+        puts "Chores -- List all the chores that need to be done. Same as todo"
         puts "Finish -- A user can list an assignment as finished."
         puts "Finish all -- A user can list all their tasks as finished"
         puts "Main menu -- Type main menu during any prompt to return to the main menu"
         puts "Roomies -- List all users who can be assigned chores."
         puts "Spin the wheel -- Invites a user to spin the chore wheel and recieve a random chore assignment."
         puts "Shirk -- Pawn off a task on another user...unless they already have to do it."
-        puts "Todo -- List all the chores that need to be done."
+        puts "Todo -- List all the chores that need to be done. Same as chores"
         puts "Volunteer -- Select a user to assign a chore"
         puts "Exit -- Leaves the program. Probably for another, better program. It's okay though. I'm not mad about it, really its fine."
     end
@@ -185,6 +192,7 @@ class CLI
         if proposed_chore == nil 
             puts "Sorry, that doesn't seem to be on the list. Let's try again."
             chorename = nil 
+            proposed_chore = nil 
             shirk 
         end
         puts "Who should do it instead?"

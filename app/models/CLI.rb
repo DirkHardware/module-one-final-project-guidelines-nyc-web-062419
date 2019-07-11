@@ -56,7 +56,7 @@ class CLI
         when "move in"
             spacer(2)
             new_user
-            spcer(2)
+            spacer(2)
             intro
 
         when "move out"
@@ -214,6 +214,7 @@ class CLI
     def new_chore
         puts "What needs to be done?"
         task = gets.chomp
+        task = task.downcase.capitalize
         can_create = Chore.similar_chore(task)
         if can_create == true 
             new_chore = Chore.create(name: task)
@@ -226,6 +227,8 @@ class CLI
     def new_user
         puts "Who is moving in?"
         username = gets.chomp
+        username = username.downcase.capitalize
+        binding.pry
         can_create = User.similar_user(username)
         if can_create == true 
             new_user = User.create(name: username)

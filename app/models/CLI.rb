@@ -16,10 +16,6 @@ class CLI
 
         case input.downcase
 
-        when "add todo"
-            add_todo 
-            intro 
-
         when "assignments"
             spacer(2)
             Assignment.who_does_what
@@ -31,6 +27,12 @@ class CLI
             Chore.todo
             spacer(2)
             intro
+        
+        when "chore wheel"
+            spacer(2)
+            spin_the_wheel
+            spacer(2)
+            intro 
 
         when "commands"
             commands
@@ -61,7 +63,7 @@ class CLI
 
         when "move out"
             spacer(2)
-            move_out("not_graceful")
+            move_out("not graceful")
             spacer(2)
             intro
 
@@ -137,16 +139,17 @@ class CLI
 
     def commands 
         puts "Available Commands are: "
-        puts "Assignments -- List who has been tasked with what chores."
+        puts "Assignments -- List which users has been tasked with what chores."
         puts "Commands -- List all possible commands."
-        puts "Chores -- List all the chores that need to be done. Same as todo"
+        puts "Chores -- List all the chores that need to be done. Same as 'to do'"
         puts "Finish -- A user can list an assignment as finished."
         puts "Finish all -- A user can list all their tasks as finished"
-        puts "Main menu -- Type main menu during any prompt to return to the main menu"
+        puts "Move in -- Add a user to the list of roommates."
+        puts "Move out -- Indicate that a user has moved out...without completing their asssignments."
+        puts "Move out gracefully -- Indicate that a user completed their assignments before moving out like a decent fucking human being"
         puts "Roomies -- List all users who can be assigned chores."
         puts "Spin the wheel -- Invites a user to spin the chore wheel and recieve a random chore assignment."
         puts "Shirk -- Pawn off a task on another user...unless they already have to do it."
-        puts "Todo -- List all the chores that need to be done. Same as chores"
         puts "Volunteer -- Select a user to assign a chore"
         puts "Exit -- Leaves the program. Probably for another, better program. It's okay though. I'm not mad about it, really its fine."
     end
@@ -154,7 +157,6 @@ class CLI
     def finish
         puts "Who finished their task?"
         username = gets.chomp
-        main_menu(username)
         user = User.find_by name: username.capitalize
         if user == nil 
             puts "Sorry but they don't live here. Type another name."
@@ -162,7 +164,6 @@ class CLI
         end
         puts "Awesome! What did you finish?"
         taskname = gets.chomp 
-        main_menu(taskname)
         chore = Chore.find_by name: taskname.capitalize
         if chore == nil
             puts "That wasn't on the list. Try again."
@@ -176,7 +177,6 @@ class CLI
     def finish_all 
         puts "Who finished their tasks?"
         username = gets.chomp
-        main_menu(username)
         user = User.find_by name: username.capitalize
         if user == nil 
             puts "Sorry but they don't live here. Type another name."
@@ -187,13 +187,23 @@ class CLI
         spacer(2)
     end
 
-    def main_menu(input)
-        if input == "main menu" || input == " main menu" || input == "main menu " || input == "mainmenu" || input == " mainmenu" || input == "mainmenu "
-            intro
-        elsif input == "exit"
-            what_program(input)
-        end
-    end 
+    def get_user
+        username = gets.chomp
+        user = User.find_by name: username.capitalize
+    end
+
+    def get_chore 
+        taskname = gets.chomp 
+        chore = Chore.find_by name: taskname.capitalize
+    end
+
+    # def main_menu(input)
+    #     if input == "main menu" || input == " main menu" || input == "main menu " || input == "mainmenu" || input == " mainmenu" || input == "mainmenu "
+    #         intro
+    #     elsif input == "exit"
+    #         what_program(input)
+    #     end
+    # end 
 
     def move_out(arg) 
         puts "Who is moving out?"
@@ -218,11 +228,11 @@ class CLI
         can_create = Chore.similar_chore(task)
         if can_create == true 
             new_chore = Chore.create(name: task)
-            puts "Its time to #{new_chore.name}!"
+            puts "Its time to #{new_chore.name.downcase}!"
         else
             puts "Thats already on the list!" 
         end 
-    end   
+    end
 
     def new_user
         puts "Who is moving in?"
@@ -234,7 +244,7 @@ class CLI
             new_user = User.create(name: username)
             puts "Welcome #{new_user.name}! Now get crackin'."
         else
-            puts "We've already got a someone with that living here, to avoid confusion maybe try again with a nickname." 
+            puts "We've already got someone with that name living here, to avoid confusion maybe try again with a nickname." 
         end 
     end   
 
@@ -242,16 +252,6 @@ class CLI
         i.times do 
             puts "."
         end  
-    end
-
-    def get_user
-        username = gets.chomp
-        user = User.find_by name: username.capitalize
-    end
-
-    def get_chore 
-        taskname = gets.chomp 
-        chore = Chore.find_by name: taskname.capitalize
     end
 
     def shirk

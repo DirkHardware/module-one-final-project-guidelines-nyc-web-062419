@@ -278,32 +278,45 @@ class CLI
         Assignment.chore_wheel(user)
         spacer(2)
     end
+
+
+    def volunteer
+        puts "Who doesn't want their job"
+        user = nil 
+        while user == nil
+            user = get_user
+        end
+        puts "What job do they want to shirk?"
+        chore = nil 
+        while chore == nil 
+            chore = get_chore
+        end
+        puts "Who should do it instead?"
+        second_user = nil 
+        while second_user == nil 
+            second_user = get_user
+        end 
+        user.shirk_task(second_user, chore.name)
+    end
     
     def volunteer
         puts "Who is volunteering for the task?"
-        username = gets.chomp
-        main_menu(username)
-        user = User.find_by name: username.capitalize 
-        if user == nil 
-            puts "Sorry but they don't live here. Type another name."
-            volunteer
+        user = nil 
+        while user == nil
+            user = get_user
         end
         puts "Awesome! What do you want to tackle?"
-        taskname = gets.chomp 
-        main_menu(taskname)
-        chore = Chore.find_by name: taskname.capitalize
-        if chore == nil
-            puts "That wasn't on the list. Try again."
-            volunteer
+        chore = nil 
+        while chore == nil 
+            chore = get_chore
         end
-        can_create = user.similar_task(user, taskname) 
-        if can_create == false
-            puts "Sorry, but they already have to do that. Pick another task."
-            volunteer
+        can_create = user.similar_task(user, chore.name)
+        if can_create == true 
+            assignment = Assignment.create(user: user, chore: chore, taskname: chore.name)
+            puts "#{user.name} has volunteered to #{assignment.taskname.downcase}!" 
         else 
-            Assignment.create(user: user, chore: chore, taskname: chore.name)
-            puts "#{user.name} has volunteered to #{taskname.downcase}!"  
-        end 
+            puts "You already signed up for that you lazy bum!"
+        end   
     end 
 
 

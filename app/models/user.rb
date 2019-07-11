@@ -31,7 +31,7 @@ class User < ActiveRecord::Base
                 # puts "#{user.name} finishes #{assignment_instance.taskname}"
             end
         end 
-    end 
+    end
 
     def shirk_task(user, taskname)
         can_shirk = similar_task(user, taskname)
@@ -55,14 +55,25 @@ class User < ActiveRecord::Base
     
     def similar_task(user, taskname)
         can_create_task = true
-        user.assignments.each do |assignment_instance|
-            if assignment_instance.taskname.downcase == taskname.downcase
-                # binding.pry 
-                can_create_task = false  
-            end 
+        similar = user.assignments.select do |assignment_instance| 
+            assignment_instance.taskname.downcase == taskname.downcase
+        end 
+        if similar.count > 0
+            can_create_task = false   
         end
         can_create_task
-    end  
+    end 
+    
+    def self.similar_user(username)
+        can_create_user = true
+        similar = User.all.select do |user_instance| 
+            user_instance.name.downcase == username.downcase
+        end 
+        if similar.count > 0
+            can_create_user = false   
+        end
+        can_create_user
+    end 
 
     def self.list_roommates
         User.all.each do |user_instance|

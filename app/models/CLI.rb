@@ -49,6 +49,18 @@ class CLI
         when "main menu"
             spacer(1)
             intro
+
+        when "move in"
+            spacer(2)
+            new_user
+            spcer(2)
+            intro
+
+        when "new chore"
+            spacer(2)
+            new_chore
+            spacer(2)
+            intro 
         
         when "roomies"
             spacer(2)
@@ -124,6 +136,31 @@ class CLI
         puts "Exit -- Leaves the program. Probably for another, better program. It's okay though. I'm not mad about it, really its fine."
     end
 
+    def new_chore
+        puts "What needs to be done?"
+        task = gets.chomp
+        can_create = Chore.similar_chore(task)
+        if can_create == true 
+            new_chore = Chore.create(name: task)
+            puts "Its time to #{new_chore.name}!"
+        else
+            puts "Thats already on the list!" 
+        end 
+    end   
+
+    def new_user
+        puts "Who is moving in?"
+        username = gets.chomp
+        can_create = User.similar_user(username)
+        if can_create == true 
+            new_user = User.create(name: username)
+            puts "Welcome #{new_user.name}! Now get crackin'."
+        else
+            puts "We've already got a someone with that living here, to avoid confusion maybe try again with a nickname." 
+        end 
+    end   
+
+
     def finish
         puts "Who finished their task?"
         username = gets.chomp
@@ -174,17 +211,37 @@ class CLI
         end  
     end
 
-    def shirk 
-        spacer(2)
-        puts "Who doesn't want their job?"
+    def get_user
         username = gets.chomp
-        main_menu(username) 
         user = User.find_by name: username.capitalize
-        if user == nil
-            puts "Sorry but they don't live here. Type another name."
-            username = nil 
-            shirk 
+    end
+
+    def get_chore 
+        taskname = gets.chomp 
+        chore = Chore.find_by name: taskname.capitalize
+    end
+
+    def shirk
+        puts "Who doesn't want their job"
+        user = nil 
+        while user == nil
+            user = get_user
+        end
+        puts "What job do they want to shirk?"
+        chore = nil 
+        while chore == nil 
+            chore = get_chore
+        end
+        puts "Who should do it instead?"
+        second_user = nil 
+        while second_user == nil 
+            second_user = get_user
         end 
+        user.shirk_task(second_user, chore.name)
+    end  
+    
+    def foo 
+
         puts "What job do they not want to do? e.g. 'Do the dishes'"
         chorename = gets.chomp
         main_menu(chorename)
@@ -223,7 +280,6 @@ class CLI
     end
     
     def volunteer
-        same_exists = false 
         puts "Who is volunteering for the task?"
         username = gets.chomp
         main_menu(username)

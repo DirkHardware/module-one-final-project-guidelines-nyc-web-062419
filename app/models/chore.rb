@@ -12,7 +12,7 @@ class Chore < ActiveRecord::Base
     def self.similar_chore(taskname)
         can_create_chore = true
         Chore.all.each do |chore_instance|
-            # binding.pry
+            binding.pry
             if chore_instance.name.downcase == taskname.downcase
                 can_create_chore = false  
             end 

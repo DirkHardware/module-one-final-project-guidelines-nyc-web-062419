@@ -1,10 +1,13 @@
 require_relative '../../config/environment'
 
+#your final task is to create a logic checker to compare the count of the user assignments and the chores to make sure you
+#don't wind up in a logical paradox where a user must be assigned a task to complete the block but there are no tasks to be assigned
+
 class CLI 
 
     def intro
         puts "Hello! Welcome to the Chore Master 5000! Type 'commands' for a full list of ways I can optimize your life!"
-        puts "Type 'main menu' during any prompt to return to this menu!"
+        spacer(1)
         input = gets.chomp  
         what_program(input) 
     end 
@@ -55,6 +58,18 @@ class CLI
             new_user
             spcer(2)
             intro
+
+        when "move out"
+            spacer(2)
+            move_out("not_graceful")
+            spacer(2)
+            intro
+
+        when "move out gracefully"
+            spacer(2)
+            move_out("graceful")
+            spacer(2)
+            intro 
 
         when "new chore"
             spacer(2)
@@ -135,32 +150,7 @@ class CLI
         puts "Volunteer -- Select a user to assign a chore"
         puts "Exit -- Leaves the program. Probably for another, better program. It's okay though. I'm not mad about it, really its fine."
     end
-
-    def new_chore
-        puts "What needs to be done?"
-        task = gets.chomp
-        can_create = Chore.similar_chore(task)
-        if can_create == true 
-            new_chore = Chore.create(name: task)
-            puts "Its time to #{new_chore.name}!"
-        else
-            puts "Thats already on the list!" 
-        end 
-    end   
-
-    def new_user
-        puts "Who is moving in?"
-        username = gets.chomp
-        can_create = User.similar_user(username)
-        if can_create == true 
-            new_user = User.create(name: username)
-            puts "Welcome #{new_user.name}! Now get crackin'."
-        else
-            puts "We've already got a someone with that living here, to avoid confusion maybe try again with a nickname." 
-        end 
-    end   
-
-
+    
     def finish
         puts "Who finished their task?"
         username = gets.chomp
@@ -205,6 +195,46 @@ class CLI
         end
     end 
 
+    def move_out(arg) 
+        puts "Who is moving out?"
+        user = nil 
+        while user == nil
+            user = get_user
+        end
+        user.delete
+        if arg == "graceful" 
+            user.finish_all_chores
+            puts "#{user.name} completes all their chores before leaving"
+        else 
+            user.assignments.delete_all
+            puts "#{user.name} left without completing all their chores!"
+        end 
+    end
+    
+    def new_chore
+        puts "What needs to be done?"
+        task = gets.chomp
+        can_create = Chore.similar_chore(task)
+        if can_create == true 
+            new_chore = Chore.create(name: task)
+            puts "Its time to #{new_chore.name}!"
+        else
+            puts "Thats already on the list!" 
+        end 
+    end   
+
+    def new_user
+        puts "Who is moving in?"
+        username = gets.chomp
+        can_create = User.similar_user(username)
+        if can_create == true 
+            new_user = User.create(name: username)
+            puts "Welcome #{new_user.name}! Now get crackin'."
+        else
+            puts "We've already got a someone with that living here, to avoid confusion maybe try again with a nickname." 
+        end 
+    end   
+
     def spacer(i)
         i.times do 
             puts "."
@@ -240,64 +270,42 @@ class CLI
         user.shirk_task(second_user, chore.name)
     end  
     
-    def foo 
-
-        puts "What job do they not want to do? e.g. 'Do the dishes'"
-        chorename = gets.chomp
-        main_menu(chorename)
-        proposed_chore = Chore.find_by name: chorename.capitalize
-        if proposed_chore == nil 
-            puts "Sorry, that doesn't seem to be on the list. Let's try again."
-            chorename = nil 
-            proposed_chore = nil 
-            shirk 
-        end
-        puts "Who should do it instead?"
-        suckername = gets.chomp
-        main_menu(suckername)
-        sucker = User.find_by name: suckername.capitalize
-        if sucker == nil
-            puts "Sorry, but they don't live here. Try another name."
-            suckername = nil 
-            shirk 
-        end
-        user.shirk_task(sucker, chorename)
-        spacer(2)
-    end 
-
     def spin_the_wheel
         spacer(2)
         puts "Who wants to spin the wheel!"
-        username = gets.chomp
-        main_menu(username)
-        user = User.find_by name: username.capitalize
-        if user == nil
-            puts "Sorry but they don't live here. Type another name."
-            spin_the_wheel
-        end
-        Assignment.chore_wheel(user)
-        spacer(2)
-    end
-
-
-    def volunteer
-        puts "Who doesn't want their job"
         user = nil 
         while user == nil
             user = get_user
         end
-        puts "What job do they want to shirk?"
-        chore = nil 
-        while chore == nil 
-            chore = get_chore
-        end
-        puts "Who should do it instead?"
-        second_user = nil 
-        while second_user == nil 
-            second_user = get_user
+        can_spin = user.chores_maxed
+        maxed = user.chores_maxed
+        if maxed == false
+            Assignment.chore_wheel(user)
+            spacer(2)
+        else 
+            puts "#{user.name} has already been assigned every possible chore!"
         end 
-        user.shirk_task(second_user, chore.name)
     end
+
+
+    # def volunteer
+    #     puts "Who doesn't want their job"
+    #     user = nil 
+    #     while user == nil
+    #         user = get_user
+    #     end
+    #     puts "What job do they want to shirk?"
+    #     chore = nil 
+    #     while chore == nil 
+    #         chore = get_chore
+    #     end
+    #     puts "Who should do it instead?"
+    #     second_user = nil 
+    #     while second_user == nil 
+    #         second_user = get_user
+    #     end 
+    #     user.shirk_task(second_user, chore.name)
+    # end
     
     def volunteer
         puts "Who is volunteering for the task?"
@@ -325,4 +333,16 @@ class CLI
 
 end
 
-# # intro 
+
+# this is how NOT to correct for edge cases during user input. The Library of Congress has voted to preserve
+# this fuckup so that future generations may learn from it 
+   # puts "What job do they not want to do? e.g. 'Do the dishes'"
+        # chorename = gets.chomp
+        # main_menu(chorename)
+        # proposed_chore = Chore.find_by name: chorename.capitalize
+        # if proposed_chore == nil 
+        #     puts "Sorry, that doesn't seem to be on the list. Let's try again."
+        #     chorename = nil 
+        #     proposed_chore = nil 
+        #     shirk 
+        # end

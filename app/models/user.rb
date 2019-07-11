@@ -52,6 +52,12 @@ class User < ActiveRecord::Base
 # However it differs in that rather than deleting them, it merely passes a boolean value to can_shirk in shirk_task, which determines
 # whether or not shirk_task will move forward and create a new assignment for a user while deleting the old assignment for the old user.
 
+    def chores_maxed
+        maxed = false
+        if self.assignments.count == Chore.all.count
+            maxed = true
+        end 
+    end
     
     def similar_task(user, taskname)
         can_create_task = true

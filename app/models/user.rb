@@ -54,9 +54,12 @@ class User < ActiveRecord::Base
 
     def chores_maxed
         maxed = false
-        if self.assignments.count == Chore.all.count
+        # binding.pry 
+        if self.assignments.count >= Chore.all.count
+            # binding.pry
             maxed = true
-        end 
+        end
+        maxed  
     end
     
     def similar_task(user, taskname)

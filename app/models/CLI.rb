@@ -280,12 +280,14 @@ class CLI
         while user == nil
             user = get_user
         end
+        # binding.pry
         can_spin = user.chores_maxed
         maxed = user.chores_maxed
-        if maxed == false
+        # binding.pry
+        if maxed == false 
             Assignment.chore_wheel(user)
             spacer(2)
-        else 
+        elsif maxed == true 
             puts "#{user.name} has already been assigned every possible chore!"
         end 
     end

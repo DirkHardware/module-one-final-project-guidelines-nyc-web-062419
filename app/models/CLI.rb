@@ -211,12 +211,14 @@ class CLI
         while user == nil
             user = get_user
         end
-        user.delete
         if arg == "graceful" 
             user.finish_all_chores
+            user.delete
             puts "#{user.name} completes all their chores before leaving"
         else 
-            user.assignments.delete_all
+            user.assignments.destroy_all
+            user.delete
+            # binding.pry
             puts "#{user.name} left without completing all their chores!"
         end 
     end
